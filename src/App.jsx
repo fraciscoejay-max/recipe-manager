@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 // TODO: import your components once you build them
  import RecipeForm from "./components/RecipeForm";
  import CategoryFilter from "./components/CategoryFilter";
@@ -100,21 +100,22 @@ export default function App() {
         </header>
 
         {/* TODO: render <RecipeForm onAdd={handleAdd} /> */}
+        <RecipeForm onAdd={handleAdd} />
 
         {/* TODO: render <SummaryBar total={...} favorites={...} /> */}
+        <SummaryBar total={recipes.length} favorites={favoriteCount} />
 
         {/* TODO: render <CategoryFilter activeFilter={filter} onFilterChange={setFilter} /> */}
+        <CategoryFilter activeFilter={filter} onFilterChange={setFilter} />
 
         {/* TODO: render <RecipeList recipes={visibleRecipes}
                                     onToggleFavorite={handleToggleFavorite}
                                     onDelete={handleDelete} /> */}
-
-        <div className="alert alert-info">
-          <span>
-            Delete this alert once you have wired up your components. Then run{" "}
-            <code className="font-mono">npm run dev</code> and check the browser.
-          </span>
-        </div>
+          <RecipeList
+            recipes={visibleRecipes}
+            onToggleFavorite={handleToggleFavorite}
+            onDelete={handleDelete}
+          />
       </div>
     </div>
   );
