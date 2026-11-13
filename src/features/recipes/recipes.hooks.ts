@@ -59,7 +59,23 @@ export function useSavedRecipes() {
   // To prove the rollback works, see "How to prove your rollback works" in the
   // handout. Do NOT just stop json-server — the list unmounts and you will see
   // nothing.
-  const favorite = useMutation({ mutationFn: updateRecipe, onSettled: invalidate });
+  const favorite = useMutation({
+    mutationFn: updateRecipe,
+    onMutate: async ({ id, favorite }) => {
+      await queryClient.cancelQueries({ queryKey: KEY });
+      const previous = queryClient.getQueryData<SavedRecipe[]>(KEY);
+      queryClient.setQueryData<SavedRecipe[]>(KEY, (old = []) =>
+        old.map((recipe) =>
+          recipe.id === id ? { ...recipe, favorite: Boolean(favorite) } : recipe,
+        ),
+      );
+      return { previous };
+    },
+    onError: (_error, _variables, context) => {
+      queryClient.setQueryData(KEY, context?.previous);
+    },
+    onSettled: invalidate,
+  });
 
   const saved = query.data ?? [];
 
