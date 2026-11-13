@@ -30,7 +30,8 @@ export default function App() {
 
   const results = search.data ?? [];
 
-  const visible = filter === "All" ? saved : saved.filter((recipe) => recipe.category === filter);
+  const visible =
+    filter === "All" ? saved : saved.filter((recipe) => recipe.category === filter);
 
   return (
     <div className="min-h-screen bg-base-200 py-8 px-4">
