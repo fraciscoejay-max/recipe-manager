@@ -1,4 +1,5 @@
 import { useState, useRef } from "react";
+import type { FormEvent } from "react";
 import type { SavedRecipe, RecipePatch } from "@/features/recipes/recipes.types";
 
 interface EditRecipeFormProps {
@@ -44,18 +45,46 @@ export default function EditRecipeForm({
   // Why a ref and not state: nothing renders this value, so re-rendering on it
   // would be pure waste. That is the distinction the final exam asks about.
 
+  const [time, setTime] = useState(String(recipe.time ?? 0));
+  const [notes, setNotes] = useState(recipe.notes ?? "");
+  const original = useRef({ time: recipe.time ?? 0, notes: recipe.notes ?? "" });
+
+  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const nextTime = Number(time) || 0;
+    const nextNotes = notes.trim();
+
+    if (nextTime === original.current.time && nextNotes === original.current.notes) {
+      onCancel();
+      return;
+    }
+
+    onSave({ id: recipe.id, time: nextTime, notes: nextNotes });
+  };
+
   return (
-    <form onSubmit={(e) => e.preventDefault()} className="space-y-3">
+    <form onSubmit={handleSubmit} className="space-y-3">
       <h3 className="font-bold text-lg">{recipe.title}</h3>
 
       <label className="form-control">
         <span className="label-text">Prep time (minutes)</span>
-        <input type="number" min="0" className="input input-bordered" />
+        <input
+          type="number"
+          min="0"
+          className="input input-bordered"
+          value={time}
+          onChange={(e) => setTime(e.target.value)}
+        />
       </label>
 
       <label className="form-control">
         <span className="label-text">Notes</span>
-        <textarea className="textarea textarea-bordered" rows={3} />
+        <textarea
+          className="textarea textarea-bordered"
+          rows={3}
+          value={notes}
+          onChange={(e) => setNotes(e.target.value)}
+        />
       </label>
 
       <div className="modal-action">
